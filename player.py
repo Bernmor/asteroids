@@ -1,10 +1,14 @@
 import pygame
 from circleshape import CircleShape
 from constants import *
+from shooter import *
 class Player(CircleShape):
     def __init__(self, x, y):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0
+        self.position = pygame.Vector2(x, y)
+        self.radius = PLAYER_RADIUS
+        self.timeout = 0
 
     def draw(self, screen):
         pygame.draw.polygon(screen, "white", self.triangle(), width=2)
@@ -30,6 +34,19 @@ class Player(CircleShape):
         if keys[pygame.K_d]:
             self.rotate(dt)
 
+        if keys[pygame.K_SPACE]:
+            if self.timeout <= 0:
+                self.shoot()
+                self.timeout = PLAYER_SHOOT_COOLDOWN
+
+
+
+
+    def shoot(self):
+        Shot(*self.position, self.rotation)
+
+
+
     # in the player class
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -39,4 +56,5 @@ class Player(CircleShape):
         c = self.position - forward * self.radius + right
         return [a, b, c]
 
-
+    def kill(self):
+        raise SystemExit("Game Over!")
